@@ -1,8 +1,6 @@
 package com.example.stresstest;
 
 import android.os.Bundle;
-import android.util.Log;
-
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -35,7 +33,8 @@ public class MainActivity extends AppCompatActivity {
             List<Callable<String>> callableTasks = new ArrayList<>();
             callableTasks.add(callable);
             callableTasks.add(callable);
-            callableTasks.add(callable);
+
+
 
 
             ExecutorService executorService = Executors.newFixedThreadPool(5);
@@ -46,24 +45,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-
-        Executors.newSingleThreadExecutor().execute(() -> {
-
-
-
-
-                while (true) {
-                    Log.d("TEST", "LOAD: " );
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
-        });
-
 
     }
 }
