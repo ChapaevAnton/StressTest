@@ -1,4 +1,4 @@
-package com.example.stresstest.benchmark.garbage;
+package com.example.stresstest.benchmark.temp;
 
 
 import java.util.concurrent.Callable;

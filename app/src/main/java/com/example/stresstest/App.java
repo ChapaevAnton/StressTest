@@ -1,0 +1,1 @@
+package com.example.stresstest;import android.app.Application;public class App extends Application {    private static Application app;    @Override    public void onCreate() {        super.onCreate();        app = (Application) getApplicationContext();    }    public static Application getApp() {        return app;    }}

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">StressTest</string>
+    <string name="start_test">start</string>
+    <string name="stop_test">stop</string>
+    <string name="charge_level">charge level-></string>
+    <string name="charge_level_percent">percent</string>
+    <string name="temperature_level">temperature-></string>
+    <string name="temperature_level_celsius">temperature celsius</string>
 </resources>
