@@ -69,10 +69,10 @@
             android:id="@+id/line_chart_info_test"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/guideline1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_info_test"
-            app:layout_constraintBottom_toTopOf="@id/guideline1"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_info_test" />
 
 
         <androidx.constraintlayout.widget.Guideline
@@ -86,6 +86,7 @@
             android:id="@+id/start_test"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{()->viewModel.onStartTestClicked()}"
             android:text="@string/start_test"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/stop_test"
@@ -93,6 +94,7 @@
             app:layout_constraintTop_toTopOf="@id/guideline1" />
 
         <Button
+            android:onClick="@{()->viewModel.onStopTestClicked()}"
             android:id="@+id/stop_test"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

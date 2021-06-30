@@ -2,8 +2,11 @@ package com.example.stresstest.utils;
 
 final public class Event<T> {
 
-    final T content;
+    private T content;
     private boolean isHandled = false;
+
+    public Event() {
+    }
 
     public Event(T content) {
         this.content = content;
