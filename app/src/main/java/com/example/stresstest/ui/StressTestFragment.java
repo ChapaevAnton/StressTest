@@ -53,8 +53,8 @@ public class StressTestFragment extends Fragment {
             }
         });
 
-        viewModel.getStopTest().observe(getViewLifecycleOwner(),voidEvent -> {
-            if(voidEvent.isHandled()){
+        viewModel.getStopTest().observe(getViewLifecycleOwner(), voidEvent -> {
+            if (voidEvent.isHandled()) {
                 Toast.makeText(requireActivity(), "stop", Toast.LENGTH_SHORT).show();
             }
         });
