@@ -1,17 +1,15 @@
 package com.example.stresstest.utils;
 
-import android.os.Bundle;
+final public class Event<T> {
 
-public class Event {
-
-    final Bundle content;
+    final T content;
     private boolean isHandled = false;
 
-    public Event(Bundle content) {
+    public Event(T content) {
         this.content = content;
     }
 
-    public Bundle getContent() {
+    public T getContent() {
         return content;
     }
 
