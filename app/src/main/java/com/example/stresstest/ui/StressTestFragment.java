@@ -20,6 +20,8 @@ import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 
+import java.util.Objects;
+
 public class StressTestFragment extends Fragment {
 
 
@@ -51,6 +53,9 @@ public class StressTestFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        binding.lineChartInfoTest.setMaxVisibleValueCount(100);
+
 
         viewModel.getStartTest().observe(getViewLifecycleOwner(), voidEvent -> {
             if (voidEvent.isHandled()) {

@@ -1,7 +1,6 @@
 package com.example.stresstest.ui;
 
 import android.app.Application;
-import android.graphics.Color;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -9,22 +8,23 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.stresstest.data.LineDataSetBattery;
 import com.example.stresstest.utils.Event;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StressTestViewModel extends AndroidViewModel {
 
     //данные Теста - временные
     private List<Entry> entries;
 
-    private LineDataSet lineDataSet = createLineDataSet();
+    private final LineDataSet lineDataSet = new LineDataSetBattery();
     private LineData lineData = new LineData(lineDataSet);
 
 
@@ -54,52 +54,49 @@ public class StressTestViewModel extends AndroidViewModel {
 
     //инизилизация
     public void setDataLineChart() {
-
-        dataLineChart.postValue(lineData);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            lineData.addEntry(new Entry(0f, 0f), 0);
+            dataLineChart.postValue(lineData);
+        });
     }
 
 
-    //нажатие кнопок
-    private float x = 0f;
-    private float y = 100f;
+    private final AtomicBoolean interrupt = new AtomicBoolean();
+
     public void onStartTestClicked() {
         Log.d("TEST", "onStartTestClicked: click ");
-        // QUESTION: 30.06.2021 Где это лучще начинать загружать данные на график?
-        lineData = dataLineChart.getValue();
-
-        if (lineData != null) {
-            ILineDataSet set = lineData.getDataSetByIndex(0);
-
-            if (set == null) {
-                set = createLineDataSet();
-                lineData.addDataSet(set);
+        interrupt.set(true);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            int x = 0;
+            while (interrupt.get()) {
+                x++;
+                addEntry(x, 100);
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-            x+=10f;
-            y-=0.1f;
-            lineData.addEntry(new Entry(x, y), 0);
-            lineData.notifyDataChanged();
-            Log.d("TEST", "onStartTestClicked: " + lineData.getDataSets());
-        }
-
-
-        dataLineChart.setValue(lineData);
+        });
 
         startTest.setValue(new Event<>());
     }
 
-    private LineDataSet createLineDataSet() {
-        LineDataSet lineDataSet = new LineDataSet(null, "battery");
-        lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
-        lineDataSet.setLineWidth(3f);
-        lineDataSet.setColor(Color.RED);
-        lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        lineDataSet.setCubicIntensity(0.2f);
-        return lineDataSet;
-    }
-
     public void onStopTestClicked() {
         Log.d("TEST", "onStopTestClicked: click");
+        interrupt.set(false);
         stopTest.setValue(new Event<>());
+    }
+
+    //добавляем новую точку на графике
+    private void addEntry(float timestamp, float chargeLevel) {
+        lineData = dataLineChart.getValue();
+        if (lineData != null) {
+
+            lineData.addEntry(new Entry(timestamp, chargeLevel), 0);
+            Log.d("TEST", "lineData.addEntry: " + lineData.getDataSets());
+        }
+        dataLineChart.postValue(lineData);
     }
 
 
