@@ -15,6 +15,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,7 +26,7 @@ public class StressTestViewModel extends AndroidViewModel {
     private List<Entry> entries;
 
     private final LineDataSet lineDataSet = new LineDataSetBattery();
-    private LineData lineData = new LineData(lineDataSet);
+    private LineData lineData = new LineData();
 
 
     private final MutableLiveData<Event<Void>> startTest = new MutableLiveData<>();
@@ -55,6 +56,7 @@ public class StressTestViewModel extends AndroidViewModel {
     //инизилизация
     public void setDataLineChart() {
         Executors.newSingleThreadExecutor().execute(() -> {
+            lineData.addDataSet(lineDataSet);
             lineData.addEntry(new Entry(0f, 0f), 0);
             dataLineChart.postValue(lineData);
         });
@@ -63,6 +65,7 @@ public class StressTestViewModel extends AndroidViewModel {
 
     private final AtomicBoolean interrupt = new AtomicBoolean();
 
+    //стартуем поток на клик кнопки
     public void onStartTestClicked() {
         Log.d("TEST", "onStartTestClicked: click ");
         interrupt.set(true);
@@ -70,7 +73,7 @@ public class StressTestViewModel extends AndroidViewModel {
             int x = 0;
             while (interrupt.get()) {
                 x++;
-                addEntry(x, 100);
+                addEntry(x, new Random().nextInt(100));
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
@@ -82,9 +85,16 @@ public class StressTestViewModel extends AndroidViewModel {
         startTest.setValue(new Event<>());
     }
 
+    //останавливаем поток на клик кнопки
     public void onStopTestClicked() {
         Log.d("TEST", "onStopTestClicked: click");
         interrupt.set(false);
+        lineDataSet.clear();
+        lineData.clearValues();
+        lineData.addDataSet(lineDataSet);
+        lineData.addEntry(new Entry(0f, 0f), 0);
+        Log.d("TEST", "lineData.addEntry: " + lineData.getDataSets());
+        dataLineChart.postValue(lineData);
         stopTest.setValue(new Event<>());
     }
 
@@ -92,7 +102,6 @@ public class StressTestViewModel extends AndroidViewModel {
     private void addEntry(float timestamp, float chargeLevel) {
         lineData = dataLineChart.getValue();
         if (lineData != null) {
-
             lineData.addEntry(new Entry(timestamp, chargeLevel), 0);
             Log.d("TEST", "lineData.addEntry: " + lineData.getDataSets());
         }

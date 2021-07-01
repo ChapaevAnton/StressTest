@@ -1,7 +1,6 @@
 package com.example.stresstest.ui;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +15,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.stresstest.R;
 import com.example.stresstest.databinding.StressTestFragmentBinding;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-
-import java.util.Objects;
 
 public class StressTestFragment extends Fragment {
 
@@ -54,9 +48,6 @@ public class StressTestFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.lineChartInfoTest.setMaxVisibleValueCount(100);
-
-
         viewModel.getStartTest().observe(getViewLifecycleOwner(), voidEvent -> {
             if (voidEvent.isHandled()) {
                 Toast.makeText(requireActivity(), "start", Toast.LENGTH_SHORT).show();
@@ -69,7 +60,6 @@ public class StressTestFragment extends Fragment {
                 Toast.makeText(requireActivity(), "stop", Toast.LENGTH_SHORT).show();
             }
         });
-
 
 
     }
