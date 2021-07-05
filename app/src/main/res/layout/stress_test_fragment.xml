@@ -38,7 +38,7 @@
                     android:id="@+id/charge_level_percent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/charge_level_percent"
+                    android:text='@{viewModel.chargeLevel,default = @string/charge_level_percent}'
                     android:textColor="@color/black"
                     android:textSize="@dimen/info_text_size" />
 
@@ -57,7 +57,7 @@
                     android:id="@+id/temperature_level_celsius"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/temperature_level_celsius"
+                    android:text='@{viewModel.temperatureLevel,default = @string/temperature_level_celsius}'
                     android:textColor="@color/black"
                     android:textSize="@dimen/info_text_size" />
 
@@ -72,7 +72,7 @@
             app:layout_constraintBottom_toTopOf="@id/guideline1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_info_test"/>
+            app:layout_constraintTop_toBottomOf="@id/text_info_test" />
 
 
         <androidx.constraintlayout.widget.Guideline
@@ -94,10 +94,10 @@
             app:layout_constraintTop_toTopOf="@id/guideline1" />
 
         <Button
-            android:onClick="@{()->viewModel.onStopTestClicked()}"
             android:id="@+id/stop_test"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{()->viewModel.onStopTestClicked()}"
             android:text="@string/stop_test"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
