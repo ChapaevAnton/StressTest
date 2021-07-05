@@ -2,6 +2,7 @@ package com.example.stresstest.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,13 +27,14 @@ public class StressTestFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         viewModel = new ViewModelProvider(requireActivity()).get(StressTestViewModel.class);
+
     }
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel.setDataLineChart();
+        viewModel.initDataLineChart();
     }
 
 
@@ -48,6 +50,17 @@ public class StressTestFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+        viewModel.getDataLineChart().observe(getViewLifecycleOwner(), lineData -> {
+
+            if (binding.lineChartInfoTest.getData() == null)
+                binding.lineChartInfoTest.setData(lineData);
+            binding.lineChartInfoTest.notifyDataSetChanged();
+            binding.lineChartInfoTest.moveViewToX(lineData.getEntryCount());
+
+        });
+
+
         viewModel.getStartTest().observe(getViewLifecycleOwner(), voidEvent -> {
             if (voidEvent.isHandled()) {
                 Toast.makeText(requireActivity(), "start", Toast.LENGTH_SHORT).show();
@@ -58,6 +71,7 @@ public class StressTestFragment extends Fragment {
         viewModel.getStopTest().observe(getViewLifecycleOwner(), voidEvent -> {
             if (voidEvent.isHandled()) {
                 Toast.makeText(requireActivity(), "stop", Toast.LENGTH_SHORT).show();
+
             }
         });
 

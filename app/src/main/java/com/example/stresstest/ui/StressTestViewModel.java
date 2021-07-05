@@ -26,7 +26,7 @@ public class StressTestViewModel extends AndroidViewModel {
     private List<Entry> entries;
 
     private final LineDataSet lineDataSet = new LineDataSetBattery();
-    private LineData lineData = new LineData();
+    private final LineData lineData = new LineData(lineDataSet);
 
 
     private final MutableLiveData<Event<Void>> startTest = new MutableLiveData<>();
@@ -48,18 +48,14 @@ public class StressTestViewModel extends AndroidViewModel {
     }
 
     //данные
-
     public LiveData<LineData> getDataLineChart() {
         return dataLineChart;
     }
 
     //инизилизация
-    public void setDataLineChart() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            lineData.addDataSet(lineDataSet);
-            lineData.addEntry(new Entry(0f, 0f), 0);
-            dataLineChart.postValue(lineData);
-        });
+    public void initDataLineChart() {
+        lineData.addEntry(new Entry(0f, 0f), 0);
+        dataLineChart.postValue(lineData);
     }
 
 
@@ -68,8 +64,10 @@ public class StressTestViewModel extends AndroidViewModel {
     //стартуем поток на клик кнопки
     public void onStartTestClicked() {
         Log.d("TEST", "onStartTestClicked: click ");
+        lineDataSet.clear();
         interrupt.set(true);
         Executors.newSingleThreadExecutor().execute(() -> {
+            Log.d("TEST", "START");
             int x = 0;
             while (interrupt.get()) {
                 x++;
@@ -81,7 +79,6 @@ public class StressTestViewModel extends AndroidViewModel {
                 }
             }
         });
-
         startTest.setValue(new Event<>());
     }
 
@@ -89,22 +86,15 @@ public class StressTestViewModel extends AndroidViewModel {
     public void onStopTestClicked() {
         Log.d("TEST", "onStopTestClicked: click");
         interrupt.set(false);
-        lineDataSet.clear();
-        lineData.clearValues();
-        lineData.addDataSet(lineDataSet);
-        lineData.addEntry(new Entry(0f, 0f), 0);
+        Log.d("TEST", "STOP");
         Log.d("TEST", "lineData.addEntry: " + lineData.getDataSets());
-        dataLineChart.postValue(lineData);
         stopTest.setValue(new Event<>());
     }
 
     //добавляем новую точку на графике
     private void addEntry(float timestamp, float chargeLevel) {
-        lineData = dataLineChart.getValue();
-        if (lineData != null) {
-            lineData.addEntry(new Entry(timestamp, chargeLevel), 0);
-            Log.d("TEST", "lineData.addEntry: " + lineData.getDataSets());
-        }
+        lineData.addEntry(new Entry(timestamp, chargeLevel), 0);
+        Log.d("TEST", "lineData.addEntry: " + lineData.getDataSets());
         dataLineChart.postValue(lineData);
     }
 
