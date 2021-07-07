@@ -4,18 +4,22 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.stresstest.data.BatteryDataSet;
 import com.example.stresstest.utils.Event;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,9 +27,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class StressTestViewModel extends AndroidViewModel {
 
     //набор данных
-    private final LineDataSet lineDataSet = new LineDataSet(null,"battery charge");
+    private final LineDataSet lineDataSet = new LineDataSet(null, "battery charge");
     private final LineData lineData = new LineData(lineDataSet);
-
+    private BatteryDataSet batteryDataSet;
 
     //старт тест
     private final MutableLiveData<Event<Void>> startTest = new MutableLiveData<>();
@@ -77,17 +81,20 @@ public class StressTestViewModel extends AndroidViewModel {
     private final AtomicBoolean interrupt = new AtomicBoolean();
 
     //стартуем поток на клик кнопки
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void onStartTestClicked() {
         Log.d("TEST", "onStartTestClicked: click ");
         lineDataSet.clear();
         interrupt.set(true);
+        //иницилизируем набор данных - уникальный id и время старта
+        batteryDataSet = new BatteryDataSet();
         Executors.newSingleThreadExecutor().execute(() -> {
             Log.d("TEST", "START");
-            int x = 0;
+            long minuteOfTime = 0;
             while (interrupt.get()) {
-                x++;
+                minuteOfTime++;
                 getCurrentTemperatureLevel();
-                addEntry(x, getCurrentChargeLevel());
+                addEntry(minuteOfTime, getCurrentChargeLevel());
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
@@ -99,11 +106,15 @@ public class StressTestViewModel extends AndroidViewModel {
     }
 
     //останавливаем поток на клик кнопки
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void onStopTestClicked() {
         Log.d("TEST", "onStopTestClicked: click");
         interrupt.set(false);
         Log.d("TEST", "STOP");
-        Log.d("TEST", "lineData.addEntry: " + lineData.getDataSets());
+        //передаем набор данных и время окончания
+        batteryDataSet.setLineValueSet(lineDataSet.getValues());
+        batteryDataSet.setEndTime(LocalDateTime.now());
+        Log.d("TEST", "batteryDataSet: " + batteryDataSet);
         stopTest.setValue(new Event<>());
     }
 

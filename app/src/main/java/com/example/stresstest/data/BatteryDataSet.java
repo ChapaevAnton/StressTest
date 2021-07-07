@@ -4,9 +4,10 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.Entry;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 final public class BatteryDataSet {
@@ -14,7 +15,7 @@ final public class BatteryDataSet {
     private final String id;
     private final LocalDateTime startTime;
     private LocalDateTime endTime;
-    private LineDataSet lineDataSet;
+    private List<Entry> lineValueSet;
 
     //init
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -32,8 +33,8 @@ final public class BatteryDataSet {
         return endTime;
     }
 
-    public LineDataSet getLineDataSet() {
-        return lineDataSet;
+    public List<Entry> getLineValueSet() {
+        return lineValueSet;
     }
 
     //setters
@@ -41,16 +42,16 @@ final public class BatteryDataSet {
         this.endTime = endTime;
     }
 
-    public void setLineDataSet(LineDataSet lineDataSet) {
-        this.lineDataSet = lineDataSet;
+    public void setLineValueSet(List<Entry> lineValueSet) {
+        this.lineValueSet = lineValueSet;
     }
 
     @Override
     public String toString() {
-        return "BatteryDataSet{" +
+        return "BatteryDataSet{\n" +
                 "id=" + id + "\n" +
                 "startTime=" + startTime + "\n" +
                 "endTime=" + endTime + "\n" +
-                "lineDataSet=" + lineDataSet + "\n }";
+                "lineValueSet=" + lineValueSet + "}";
     }
 }
