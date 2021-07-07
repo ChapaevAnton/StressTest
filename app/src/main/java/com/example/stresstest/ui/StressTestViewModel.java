@@ -13,6 +13,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.stresstest.benchmark.Benchmark;
 import com.example.stresstest.data.BatteryDataSet;
 import com.example.stresstest.utils.Event;
 import com.github.mikephil.charting.data.Entry;
@@ -25,6 +26,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StressTestViewModel extends AndroidViewModel {
+
+    //стресс тест
+    private final Benchmark benchmark = new Benchmark();
 
     //набор данных
     private final LineDataSet lineDataSet = new LineDataSet(null, "battery charge");
@@ -78,17 +82,20 @@ public class StressTestViewModel extends AndroidViewModel {
     }
 
 
-    private final AtomicBoolean interrupt = new AtomicBoolean();
+    private final AtomicBoolean interrupt = new AtomicBoolean(false);
 
     //стартуем поток на клик кнопки
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onStartTestClicked() {
         Log.d("TEST", "onStartTestClicked: click ");
-        lineDataSet.clear();
-        interrupt.set(true);
-        //иницилизируем набор данных - уникальный id и время старта
-        batteryDataSet = new BatteryDataSet();
+
         Executors.newSingleThreadExecutor().execute(() -> {
+            lineDataSet.clear();
+            interrupt.set(true);
+            //иницилизируем набор данных - уникальный id и время старта
+            batteryDataSet = new BatteryDataSet();
+            //старт теста
+            benchmark.start();
             Log.d("TEST", "START");
             long minuteOfTime = 0;
             while (interrupt.get()) {
@@ -109,13 +116,17 @@ public class StressTestViewModel extends AndroidViewModel {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void onStopTestClicked() {
         Log.d("TEST", "onStopTestClicked: click");
-        interrupt.set(false);
-        Log.d("TEST", "STOP");
-        //передаем набор данных и время окончания
-        batteryDataSet.setLineValueSet(lineDataSet.getValues());
-        batteryDataSet.setEndTime(LocalDateTime.now());
-        Log.d("TEST", "batteryDataSet: " + batteryDataSet);
-        stopTest.setValue(new Event<>());
+
+        Executors.newSingleThreadExecutor().execute(()->{
+            benchmark.stop();
+            interrupt.set(false);
+            Log.d("TEST", "STOP");
+            //передаем набор данных и время окончания
+            batteryDataSet.setLineValueSet(lineDataSet.getValues());
+            batteryDataSet.setEndTime(LocalDateTime.now());
+            Log.d("TEST", "batteryDataSet: " + batteryDataSet);
+        });
+                stopTest.setValue(new Event<>());
     }
 
     //добавляем новую точку на графике
