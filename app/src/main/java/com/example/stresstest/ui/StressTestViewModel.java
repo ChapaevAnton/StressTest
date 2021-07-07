@@ -11,23 +11,19 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.stresstest.data.LineDataSetBattery;
 import com.example.stresstest.utils.Event;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class StressTestViewModel extends AndroidViewModel {
 
-    //данные Теста - временные
-    private List<Entry> entries;
-
-    private final LineDataSet lineDataSet = new LineDataSetBattery();
+    //набор данных
+    private final LineDataSet lineDataSet = new LineDataSet(null,"battery charge");
     private final LineData lineData = new LineData(lineDataSet);
 
 
