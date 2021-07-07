@@ -2,6 +2,7 @@ package com.example.stresstest.db;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.github.mikephil.charting.data.Entry;
@@ -22,9 +23,19 @@ public class BatteryLog {
     private LocalDateTime endTime;
 
     @ColumnInfo(name = "line_value_set")
+    @Ignore
     private List<Entry> lineValueSet;
 
-    public BatteryLog(LocalDateTime startTime, LocalDateTime endTime, List<Entry> lineValueSet) {
+
+    public BatteryLog(long id, LocalDateTime startTime, LocalDateTime endTime) {
+        this.id = id;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    @Ignore
+    public BatteryLog(long id, LocalDateTime startTime, LocalDateTime endTime, List<Entry> lineValueSet) {
+        this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
         this.lineValueSet = lineValueSet;
