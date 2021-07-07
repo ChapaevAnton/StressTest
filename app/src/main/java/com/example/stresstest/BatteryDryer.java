@@ -1,1 +1,0 @@
-package com.example.stresstest;import com.example.stresstest.benchmark.Benchmark;public class BatteryDryer {    private final Benchmark benchmark = new Benchmark();    public void startDry(){        benchmark.start();    }    public void stopDry(){        benchmark.stop();    }}
